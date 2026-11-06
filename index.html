@@ -513,7 +513,7 @@
       choose(code);
       return;
     }
-    if (window.confirm("☁ Paired: " + k.slice(0, 6).toUpperCase() + "\nFull key: " + k + "\n\nOK = unpair this device (keeps local scores)\nCancel = keep massaged pairing")) {
+    if (window.confirm("☁ Paired: " + k.slice(0, 6).toUpperCase() + "\nFull key: " + k + "\n\nOK = unpair this device (keeps local scores)\nCancel = keep paired")) {
       lsSet(KEY_STORE, "");
     }
   }
