@@ -1,0 +1,2119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OREO Speaking Practice</title>
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem("oreoTheme");
+      if (!t) { t = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark"; }
+      document.documentElement.setAttribute("data-theme", t);
+    } catch (e) { }
+  })();
+</script>
+<style>
+  :root {
+    --bg: #10101a;
+    --card: #1b1b28;
+    --card2: #222232;
+    --cream: #f3ede1;
+    --muted: #8b8b9e;
+    --blue: #3d8bfd;
+    --green: #3ecf8e;
+    --yellow: #f5c04a;
+    --red: #ef5b5b;
+    --line: #2c2c3d;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--cream);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    min-height: 100vh;
+    padding: 24px 16px 60px;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 28px; }
+  .logo { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; }
+  .cookie {
+    width: 54px; height: 54px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #3a2f28, #17110d 70%);
+    border: 3px solid #060403;
+    box-shadow: inset 0 0 0 5px #221a15;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .cookie .cream { width: 26px; height: 10px; border-radius: 8px; background: var(--cream); }
+  h1 { font-size: 30px; margin-top: 12px; letter-spacing: .5px; }
+  h1 span { color: var(--blue); }
+  .tagline { color: var(--muted); font-size: 14px; margin-top: 6px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 18px;
+  }
+  .card h2 {
+    font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--muted); margin-bottom: 12px;
+  }
+  .topic-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .topic-text { font-size: 19px; font-weight: 600; flex: 1 1 auto; min-width: 200px; }
+  button {
+    font-family: inherit; cursor: pointer; border: none; border-radius: 10px;
+    padding: 10px 16px; font-size: 14px; font-weight: 600; min-height: 42px;
+    background: #2a2a3c; color: var(--cream); transition: filter .15s, transform .05s;
+  }
+  button:hover { filter: brightness(1.2); }
+  button:active { transform: scale(.97); }
+  button.primary { background: var(--blue); color: #fff; }
+  button.stop { background: var(--red); color: #fff; }
+  input[type="text"] {
+    font-family: inherit; font-size: 14px; color: var(--cream);
+    background: #14141f; border: 1px solid var(--line); border-radius: 10px;
+    padding: 10px 14px; flex: 1 1 240px; min-width: 200px; min-height: 42px;
+  }
+  input[type="text"]::placeholder { color: #56566b; }
+  select {
+    font-family: inherit; font-size: 13px; color: var(--cream);
+    background: #14141f; border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px;
+    min-height: 42px;
+  }
+  .mic-stage { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 12px 0 22px; }
+  .mic-btn {
+    width: 108px; height: 108px; border-radius: 50%;
+    background: #26263a; border: 2px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .mic-btn .mic-icon { width: 40px; height: 40px; fill: var(--cream); }
+  .recording .mic-btn { background: var(--red); border-color: #ff8787; }
+  .recording .mic-btn .mic-icon { fill: #fff; }
+  .recording .mic-btn::after {
+    content: ""; position: absolute; inset: -12px; border-radius: 50%;
+    border: 2px solid var(--red); animation: pulse 1.4s ease-out infinite;
+  }
+  @keyframes pulse {
+    0% { transform: scale(.85); opacity: .9; }
+    100% { transform: scale(1.35); opacity: 0; }
+  }
+  .mic-row { display: flex; gap: 10px; align-items: center; }
+  .timer { font-variant-numeric: tabular-nums; font-size: 15px; color: var(--muted); min-width: 50px; }
+  .status { font-size: 14px; color: var(--muted); text-align: center; min-height: 20px; }
+  .transcript-box {
+    background: #14141f; border: 1px solid var(--line); border-radius: 12px;
+    padding: 14px 16px; font-size: 16px; line-height: 1.65; min-height: 110px;
+    color: var(--cream); white-space: pre-wrap;
+  }
+  .transcript-box .interim { color: var(--muted); font-style: italic; }
+  .transcript-box .placeholder { color: #56566b; font-style: italic; }
+  textarea {
+    width: 100%; min-height: 110px; resize: vertical;
+    font-family: inherit; font-size: 16px; line-height: 1.65; color: var(--cream);
+    background: #14141f; border: 1px solid var(--line); border-radius: 12px;
+    padding: 14px 16px;
+  }
+  textarea::placeholder { color: #56566b; }
+  .hidden { display: none !important; }
+  .row-between { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .banner {
+    background: #2b2413; border: 1px solid #6b5619; color: var(--yellow);
+    border-radius: 10px; padding: 10px 14px; font-size: 13.5px; margin-bottom: 14px;
+  }
+  .score-head { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; justify-content: center; }
+  .ring {
+    width: 120px; height: 120px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: conic-gradient(var(--ring-color, var(--green)) calc(var(--pct, 0) * 1%), #2a2a3c 0);
+    transition: background .6s ease;
+  }
+  .ring-inner {
+    width: 92px; height: 92px; border-radius: 50%; background: var(--card);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .ring-num { font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .ring-sub { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .grade { font-size: 20px; font-weight: 700; text-align: center; min-width: 180px; }
+  .grade-sub { color: var(--muted); font-size: 13px; margin-top: 4px; font-weight: 400; }
+  .bars { display: grid; gap: 12px; margin-top: 22px; }
+  .bar-item { display: grid; grid-template-columns: 118px 1fr 30px; gap: 10px; align-items: center; }
+  .bar-label { font-size: 13px; color: var(--muted); }
+  .bar-label b { color: var(--cream); font-size: 14px; }
+  .bar-track { height: 10px; border-radius: 5px; background: #26263a; overflow: hidden; }
+  .bar-fill { height: 100%; width: 0; border-radius: 5px; background: var(--bar-color, var(--blue)); transition: width .7s cubic-bezier(.2,.8,.3,1); }
+  .bar-num { font-size: 13px; text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+  .badge {
+    display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 20px;
+    margin-left: 8px; vertical-align: middle;
+  }
+  .badge.ok { background: rgba(62,207,142,.15); color: var(--green); }
+  .badge.no { background: rgba(239,91,91,.15); color: var(--red); }
+  .feedback { margin-top: 18px; display: grid; gap: 8px; }
+  .fb-item { font-size: 14px; line-height: 1.55; padding: 10px 14px; border-radius: 10px; background: #14141f; border: 1px solid var(--line); }
+  .fb-item.good { border-color: rgba(62,207,142,.4); }
+  .fb-item.warn { border-color: rgba(245,192,74,.4); }
+  .fb-item.bad { border-color: rgba(239,91,91,.4); }
+  .stats { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+  .stat {
+    background: #14141f; border: 1px solid var(--line); border-radius: 10px;
+    padding: 8px 14px; text-align: center; flex: 1 1 90px;
+  }
+  .stat .v { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .stat .k { font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+  .mini-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin: 20px 0 8px; }
+  details { margin-top: 10px; }
+  details summary { cursor: pointer; color: var(--blue); font-size: 14px; font-weight: 600; user-select: none; }
+  details p { margin-top: 10px; font-size: 14px; color: #c9c3d6; line-height: 1.7; }
+  details p b { color: var(--yellow); }
+  .history-item {
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    padding: 10px 14px; border-radius: 10px; background: #14141f;
+    border: 1px solid var(--line); font-size: 13.5px;
+  }
+  .history-item + .history-item { margin-top: 8px; }
+  .history-item .meta { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .history-item .score { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .opts select { min-width: 96px; }
+  .prep-overlay {
+    position: fixed; inset: 0; z-index: 50;
+    background: rgba(13, 13, 22, .93);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+  }
+  .prep-label { font-size: 14px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+  .prep-num { font-size: 120px; font-weight: 800; color: var(--cream); font-variant-numeric: tabular-nums; line-height: 1; }
+  .mk { border-radius: 5px; padding: 0 3px; }
+  .mk-O, .lg-O { background: rgba(61, 139, 253, .22); color: #9cc4ff; }
+  .mk-R, .lg-R { background: rgba(245, 192, 74, .18); color: #ffd27a; }
+  .mk-E, .lg-E { background: rgba(239, 91, 91, .16); color: #ff9fa5; }
+  .mk-O2, .lg-O2 { background: rgba(62, 207, 142, .15); color: #7fe0b6; }
+  .legend { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .lg { font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 700; }
+  .kb-hint { font-size: 12px; color: var(--muted); }
+  @media (prefers-reduced-motion: reduce) {
+    .recording .mic-btn::after { animation: none; }
+    .bar-fill { transition: none; }
+  }
+  footer { text-align: center; color: #56566b; font-size: 12.5px; margin-top: 30px; line-height: 1.8; }
+  a { color: var(--blue); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">
+      <div class="cookie"><div class="cream"></div></div>
+      <h1>OREO <span>Practice</span></h1>
+      <div class="tagline">Opinion · Reason · Example · Opinion — speak, kain, repeat 🍪</div>
+    </div>
+  </header>
+
+  <div class="banner hidden" id="banner"></div>
+
+  <div class="prep-overlay hidden" id="prepOverlay">
+    <div class="prep-label">Get ready — plan your O-R-E-O</div>
+    <div class="prep-num" id="prepNum">30</div>
+  </div>
+
+  <section class="card">
+    <h2>Question</h2>
+    <div class="topic-row">
+      <div class="topic-text" id="topicText">Loading…</div>
+      <button id="btnRandom">🎲 Random</button>
+      <button id="btnSpeakTopic">🔊 Listen</button>
+    </div>
+    <div class="topic-row" style="margin-top:12px;">
+      <input type="text" id="customTopic" placeholder="Or type your own question... (Tagalog? Taglish? go!)">
+      <button id="btnSetTopic">Set</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="row-between">
+      <h2 style="margin-bottom:0;">Your Answer</h2>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <select id="langSelect" title="Recognition language">
+          <option value="en-US">English</option>
+          <option value="fil-PH">Filipino / Taglish</option>
+        </select>
+        <button id="btnModeToggle">⌨️ Type mode</button>
+      </div>
+    </div>
+
+    <div class="opts" id="optsRow" style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+      <label style="font-size:13px; color:var(--muted);">Prep</label>
+      <select id="prepSelect">
+        <option value="0" selected>No prep</option>
+        <option value="15">15s</option>
+        <option value="30">30s</option>
+      </select>
+      <label style="font-size:13px; color:var(--muted);">Time limit</label>
+      <select id="limitSelect">
+        <option value="0" selected>No limit</option>
+        <option value="45">45s</option>
+        <option value="60">60s</option>
+        <option value="90">90s</option>
+        <option value="120">2 min</option>
+      </select>
+      <label style="font-size:13px; color:var(--muted); display:flex; align-items:center; gap:6px;">
+        <input type="checkbox" id="autoRate" checked> Auto-rate at limit
+      </label>
+      <label style="font-size:13px; color:var(--muted); display:flex; align-items:center; gap:6px;">
+        <input type="checkbox" id="pauseTracker" checked> Pause tracker
+      </label>
+    </div>
+
+    <div class="mic-stage" id="micStage">
+      <div class="mic-row">
+        <button class="mic-btn" id="btnMic" title="Start speaking">
+          <svg class="mic-icon" viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z"/></svg>
+        </button>
+      </div>
+      <div class="mic-row">
+        <button class="stop hidden" id="btnStop">⏹ Stop &amp; Rate</button>
+        <div class="timer" id="timer">0:00</div>
+      </div>
+      <div class="status" id="status" role="status" aria-live="polite">Tap the mic to start</div>
+      <div class="kb-hint">Space = start / stop</div>
+    </div>
+
+    <div class="transcript-box" id="transcriptBox"><span class="placeholder">Your speech will appear here…</span></div>
+    <textarea id="typeBox" class="hidden" placeholder="Type mode: i-type mo dito ang sagot mo, tapos Rate. (Fallback kung ayaw gumana ng mic.)"></textarea>
+
+    <div class="row-between" style="margin-top:14px;">
+      <button id="btnAnalyze" class="primary">🧮 Rate my OREO</button>
+      <button id="btnReset">↺ Clear</button>
+    </div>
+  </section>
+
+  <section class="card hidden" id="resultCard">
+    <h2>Result</h2>
+    <div class="score-head">
+      <div class="ring" id="ringOreo">
+        <div class="ring-inner">
+          <div class="ring-num" id="ringOreoNum">0</div>
+          <div class="ring-sub">OREO</div>
+        </div>
+      </div>
+      <div class="ring" id="ringDel">
+        <div class="ring-inner">
+          <div class="ring-num" id="ringDelNum">0</div>
+          <div class="ring-sub">Delivery</div>
+        </div>
+      </div>
+      <div class="ring" id="ringConf">
+        <div class="ring-inner">
+          <div class="ring-num" id="ringConfNum">0</div>
+          <div class="ring-sub">Confidence</div>
+        </div>
+      </div>
+      <div class="grade">
+        <div id="gradeText" aria-live="polite">—</div>
+        <div class="grade-sub" id="gradeSub"></div>
+        <div class="grade-sub" id="deltaBadge" style="margin-top:6px;"></div>
+      </div>
+    </div>
+
+    <div class="bars" id="bars"></div>
+
+    <div class="mini-title" id="delTitle">Delivery</div>
+    <div class="bars" id="barsDel"></div>
+    <div class="mini-title" id="confTitle">Confidence</div>
+    <div class="bars" id="barsConf"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="stats" id="stats"></div>
+
+    <div class="row-between" style="margin-top:16px;">
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button id="btnRetry" class="primary">↻ Same topic again</button>
+        <button id="btnReadBack">🔉 Hear my answer</button>
+        <button id="btnCopy">📋 Copy transcript</button>
+      </div>
+    </div>
+
+    <div class="mini-title">Transcript</div>
+    <div class="transcript-box" id="finalTranscript"></div>
+    <div class="legend hidden" id="legendRow">
+      <span class="lg lg-O">O Opinion</span>
+      <span class="lg lg-R">R Reason</span>
+      <span class="lg lg-E">E Example</span>
+      <span class="lg lg-O2">O Wrap-up</span>
+    </div>
+
+    <details>
+      <summary>📖 Sample OREO answer (click to peek)</summary>
+      <p id="sampleAnswer"></p>
+    </details>
+  </section>
+
+  <section class="card" id="historyCard">
+    <div class="row-between">
+      <h2 style="margin-bottom:0;">History</h2>
+      <button id="btnClearHistory">Clear</button>
+    </div>
+    <div id="historyList" style="margin-top:12px;"></div>
+    <div id="trendWrap" class="hidden" style="margin-top:14px;">
+      <div class="mini-title">Score trend</div>
+      <div id="trendBox"></div>
+    </div>
+  </section>
+
+  <footer>
+    Ideas are rated locally via keyword markers (EN + Tagalog) — <b>Google Chrome</b> or <b>Edge</b> recommended for mic support.<br>
+    Bored of grading? Need an AI grader with reasoning later — just ask to upgrade this page.
+  </footer>
+</div>
+
+<button id="viewResultBtn" class="primary hidden" style="position:fixed; right:18px; bottom:18px; z-index:40; box-shadow:0 6px 18px rgba(0,0,0,.45);">📝 View result ↓</button>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+<script>
+(function () {
+  "use strict";
+  var fb = null;
+  try {
+    fb = firebase.initializeApp({
+      apiKey: "AIzaSyBcP54fYTfqOfQ9nZZZhD1otWnaGbLTlXI",
+      authDomain: "sensor-diagnosis-sync.firebaseapp.com",
+      databaseURL: "https://sensor-diagnosis-sync-default-rtdb.firebaseio.com",
+      projectId: "sensor-diagnosis-sync",
+      storageBucket: "sensor-diagnosis-sync.firebasestorage.app",
+      messagingSenderId: "135212653838",
+      appId: "1:135212653838:web:abd085a0d0badff5884b5f"
+    });
+  } catch (e) { }
+  if (!fb || !firebase.database) {
+    window.oreoCloud = { push: function () { }, notify: function () { } };
+    return;
+  }
+
+  var db = firebase.database();
+  var KEY_STORE = "oreoCloudKey";
+  var chip = null, pushTimer = null, pending = false;
+
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { } }
+  function notify(msg) { if (window.__oreoNotify) { try { window.__oreoNotify(msg); } catch (e) { } } }
+  function merged() { try { document.dispatchEvent(new CustomEvent("oreoCloud:merged")); } catch (e) { } }
+
+  function entryKey(e) { return String(e.date) + "|" + String(e.topic); }
+  function loadLocal() {
+    try { return JSON.parse(lsGet("oreoHistory") || "[]"); } catch (e) { return []; }
+  }
+  function saveLocal(arr) {
+    lsSet("oreoHistory", JSON.stringify(arr));
+    merged();
+  }
+  function toMap(arr) {
+    var m = {};
+    (arr || []).forEach(function (e) {
+      if (!e.ts) { e.ts = Date.now(); }
+      m[entryKey(e)] = e;
+    });
+    return m;
+  }
+  function fromMap(map) {
+    var arr = Object.keys(map || {}).map(function (k) { return map[k]; });
+    arr.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
+    return arr.slice(0, 20);
+  }
+  function sessionRef(key) { return db.ref("sessions/" + key + "/history"); }
+  function pairRef(code) { return db.ref("pairs/" + code); }
+
+  function genKey() {
+    var hex = "0123456789abcdef", out = "";
+    var buf = new Uint8Array(8);
+    try { crypto.getRandomValues(buf); for (var i = 0; i < 8; i++) { out += hex[buf[i] >> 4] + hex[buf[i] & 15]; } }
+    catch (e) { for (var j = 0; j < 16; j++) { out += hex[Math.floor(Math.random() * 16)]; } }
+    return out;
+  }
+
+  function chipPaint() {
+    var k = lsGet(KEY_STORE);
+    if (!chip) return;
+    if (!k) { chip.textContent = "☁ tap to pair"; chip.title = "Pair cloud sync — create a session or type a 6-char pair code"; return; }
+    chip.textContent = pending ? "☁ syncing…" : (fb && fb.database ? "☁ synced" : "☁ off");
+    chip.title = "Cloud session key: " + k + "  (pair code: " + k.slice(0, 6) + ")";
+  }
+
+  function push() {
+    var k = lsGet(KEY_STORE);
+    if (!k) return;
+    pending = true; chipPaint();
+    clearTimeout(pushTimer);
+    pushTimer = setTimeout(function () {
+      sessionRef(k).set(toMap(loadLocal())).then(function () {
+        pending = false; chipPaint();
+      }).catch(function (err) {
+        pending = false; chipPaint();
+        notify("☁ Sync write failed: " + (err && err.message ? err.message : "check Firebase rules"));
+      });
+    }, 1200);
+  }
+
+  function pull(cb) {
+    var k = lsGet(KEY_STORE);
+    if (!k) { if (cb) cb(null); return; }
+    pending = true; chipPaint();
+    sessionRef(k).get().then(function (snap) {
+      var map = snap.val();
+      pending = false; chipPaint();
+      if (map && Object.keys(map).length) {
+        var local = loadLocal();
+        var mergedMap = toMap(local);
+        Object.keys(map).forEach(function (k2) {
+          var c = map[k2];
+          if (!mergedMap[k2] || (c && (c.ts || 0) > (mergedMap[k2].ts || 0))) { mergedMap[k2] = c; }
+        });
+        var next = fromMap(mergedMap);
+        if (JSON.stringify(next) !== JSON.stringify(local)) {
+          saveLocal(next);
+          notify("☁ Cloud history merged — " + next.length + " entries, device pair " + k.slice(0, 6));
+        }
+      } else if (map === null || !Object.keys(map || {}).length) {
+        if (loadLocal().length) { push(); }
+      }
+      if (cb) cb(map);
+    }).catch(function (err) {
+      pending = false; chipPaint();
+      notify("☁ Sync read failed: " + (err && err.message ? err.message : "check rules") + " — scores stay local pa rin.");
+      if (cb) cb(null);
+    });
+  }
+
+  function choose(codeText) {
+    var k = String(codeText || "").toLowerCase().replace(/[^a-f0-9]/g, "");
+    if (!k) {
+      k = genKey();
+      lsSet(KEY_STORE, k);
+      var code = k.slice(0, 6);
+      pairRef(code).set(k).then(function () { }).catch(function () { });
+      chipPaint();
+      push();
+      notify("☁ Cloud sync ON. Pair code: " + code.toUpperCase() + " — on another device tap ☁ and type it.");
+      return;
+    }
+    if (k.length !== 6) { notify("☁ Pair code must be 6 hex chars (e.g. A1B2C3)."); return; }
+    pairRef(k).get().then(function (snap) {
+      var full = snap.val();
+      if (!full || !/^[a-f0-9]{16}$/.test(full)) { notify("☁ Pair code hindi found — generate muna sa laptop (tap ☁, leave blank)."); return; }
+      lsSet(KEY_STORE, full);
+      chipPaint();
+      pull();
+      notify("☁ Paired with session " + full.slice(0, 6).toUpperCase() + ".");
+    }).catch(function () { notify("☁ Pair lookup failed (rules offline?)."); });
+  }
+
+  function onChip() {
+    var k = lsGet(KEY_STORE);
+    if (!k) {
+      var code = window.prompt("☁ Cloud sync\n\nType a 6-char pair code from your other device, or press OK with the box empty to create a new session:", "");
+      choose(code);
+      return;
+    }
+    if (window.confirm("☁ Paired: " + k.slice(0, 6).toUpperCase() + "\nFull key: " + k + "\n\nOK = unpair this device (keeps local scores)\nCancel = keep massaged pairing")) {
+      lsSet(KEY_STORE, "");
+    }
+  }
+
+  chip = document.createElement("button");
+  chip.style.cssText = "position:fixed; left:16px; bottom:18px; z-index:50; padding:10px 14px; border-radius:999px; border:1px solid rgba(255,255,255,.2); background:#1f2937; color:#e5e7eb; font:600 13px -apple-system,Segoe UI,sans-serif; cursor:pointer; box-shadow:0 6px 18px rgba(0,0,0,.45);";
+  chip.textContent = "☁ tap to pair";
+  chip.addEventListener("click", onChip);
+  try { document.body.appendChild(chip); } catch (e) { }
+
+  chipPaint();
+  if (lsGet(KEY_STORE)) { pull(); }
+
+  window.oreoCloud = { push: push, choose: choose, pull: pull };
+})();
+</script>
+
+<script>
+(function () {
+  "use strict";
+
+  var TOPICS = [
+    "Is positive thinking overrated when it comes to success?",
+    "Is talking to yourself out loud a normal habit or a red flag?",
+    "Is journaling every night a waste of time or a quiet superpower?",
+    "Can affirmations actually change how you see yourself?",
+    "Is comparing yourself to others always a bad thing?",
+    "Does complaining make problems worse instead of better?",
+    "Is gratitude a real practice or just a buzzword people post about?",
+    "Is confidence something you build or something you are born with?",
+    "Is it possible to be too self-aware?",
+    "Is setting high standards for yourself a trap or a strength?",
+    "Does a growth mindset really beat raw talent?",
+    "Is it healthy to have a favorite failure you keep retelling?",
+    "Is self-criticism useful if it pushes you to improve?",
+    "Is it better to pretend to be confident until it becomes real?",
+    "Is meditation actually worth the hype for students?",
+    "Is it embarrassing to cry in front of your friends?",
+    "Does venting to friends actually solve anything?",
+    "Is it a good idea to write down your biggest fears?",
+    "Is humility still useful in a world of personal branding?",
+    "Is jealousy a useful signal or pure poison?",
+    "Is it wise to say your dreams out loud before they happen?",
+    "Does the advice to 'just be yourself' actually help anyone?",
+    "Is it possible to forgive yourself after a big mistake?",
+    "Is boredom good for the brain?",
+    "Is it weak to ask for help with your mental health?",
+    "Is it realistic to build three new habits at the same time?",
+    "Is waking up at 5 AM better than sleeping in?",
+    "Does making your bed really matter for the rest of the day?",
+    "Is missing one day of a habit the same as failing?",
+    "Is it better to have a night routine or a morning routine?",
+    "Can you really change your life in 30 days?",
+    "Is a to-do list outdated compared to a calendar schedule?",
+    "Does streak-tracking make habits more fun or more stressful?",
+    "Is it okay to quit a habit that no longer serves you?",
+    "Is checking your phone first thing in the morning ruining your day?",
+    "Is it better to plan your week on Sunday or the night before?",
+    "Can cleaning your room actually clear your mind?",
+    "Is drinking water first thing in the morning overhyped?",
+    "Does filming yourself study help or distract you?",
+    "Is it better to reward yourself after finishing tasks or before starting them?",
+    "Is listening to music while reviewing a distraction or a boost?",
+    "Is it easier to build habits at home than at school?",
+    "Is Sunday a true day of rest, or the best day to prepare for the week?",
+    "Is the two-minute rule life-changing or just clever marketing?",
+    "Does tracking your sleep change how you sleep?",
+    "Is it better to study at the same time daily or whenever you feel like it?",
+    "Is it possible to be productive without any routine at all?",
+    "Is the 80/20 rule useful for daily life or only for business?",
+    "Is walking 10,000 steps a day a real goal or an arbitrary number?",
+    "Does taking the stairs every day actually add up to anything?",
+    "Does planning your outfit the night before save real mental energy?",
+    "Is discipline more important than motivation for students?",
+    "Is it possible to truly focus for more than four hours a day?",
+    "Should you delete social media apps during exam week?",
+    "Is it better to fight distractions or to remove them?",
+    "Is willpower a limited resource or a learnable skill?",
+    "Is studying in a cafe better for focus than studying at home?",
+    "Does music help you focus or just make you feel productive?",
+    "Should video games only be a reward after homework?",
+    "Is it better to finish one task fully or to juggle five?",
+    "Do notifications deserve the blame for lost focus?",
+    "Is putting your phone face-down during a conversation rude or respectful?",
+    "Is the pomodoro technique overrated?",
+    "Is it worth silencing all group chats for a week?",
+    "Does being busy always mean being productive?",
+    "Is it okay to say no to invitations when you need time for yourself?",
+    "Is doing homework in one sitting better than in pieces?",
+    "Can you study without breaks and still remember everything?",
+    "Should you turn off all notifications while studying?",
+    "Is a messy desk a sign of a messy mind?",
+    "Is peer pressure a problem even when it pushes you to improve?",
+    "Is it better to be strict with yourself or gentle when holding yourself accountable?",
+    "Does rewarding yourself with screen time reinforce bad habits?",
+    "Is multitasking real, or just rapid switching between tasks?",
+    "Is it better to commit to fewer tasks and actually finish them?",
+    "Is it smarter to set process goals instead of outcome goals?",
+    "Is it better to tell people your goals or keep them private?",
+    "Is a five-year plan realistic at your age?",
+    "Is failing in public better than never trying?",
+    "Is it okay to want to be famous for something?",
+    "Is ambition without purpose just restlessness?",
+    "Is it better to chase one big dream or to collect many small wins?",
+    "Should everyone write a bucket list?",
+    "Is it a mistake to plan your whole future while still young?",
+    "Is it better to exceed expectations or to simply meet them?",
+    "Is quitting a good decision when the goal no longer excites you?",
+    "Is it possible to be both humble and hungry for success?",
+    "Is it healthier to compete with your own past self?",
+    "Is a vision board helpful or just arts and crafts?",
+    "Is it okay to change your dream in the middle of pursuing it?",
+    "Does writing goals down actually increase your chances of achieving them?",
+    "Is it better to be a big fish in a small pond or the opposite?",
+    "Is taking a gap year a good way to find yourself?",
+    "Is choosing a safe dream over an ambitious one a waste?",
+    "Should parents choose your goals for you if they think they know better?",
+    "Is comparing your first chapter to someone else's twentieth really unfair?",
+    "Is it okay to outgrow your friend group when your goals change?",
+    "Is it more motivating to aim for a rank or for mastery?",
+    "Is it better to be consistently good than occasionally great?",
+    "Does fear of mediocrity push people to greatness or to burnout?",
+    "Is confidence more important than competence in interviews?",
+    "Is it rude to correct someone's grammar in public?",
+    "Is it strange to rehearse before casual small talk?",
+    "Should shy students practice public speaking too?",
+    "Is it better to be a good listener than a good talker?",
+    "Can you fake eye contact until it feels natural?",
+    "Does saying sorry too often make you look weaker?",
+    "Is it okay to brag about your achievements once in a while?",
+    "Is it easier to open up online than face to face?",
+    "Is it better to have three close friends than thirty acquaintances?",
+    "Is avoiding all conflict cowardly or wise?",
+    "Is it okay to interrupt when you have a genuinely better idea?",
+    "Should shy students be graded on recitation?",
+    "Is it better to voice disagreement in private or in front of everyone?",
+    "Is practicing introductions in front of a mirror useful or cringe?",
+    "Is being the funny one in the group a real social skill?",
+    "Is it okay to attend a party alone and leave after an hour?",
+    "Is it rude to decline invitations directly instead of making excuses?",
+    "Is it better to give compliments out loud or in writing?",
+    "Is asking someone to repeat themselves embarrassing or just normal?",
+    "Can you be true friends with someone you have only texted?",
+    "Is it okay to end a friendship that drains your energy?",
+    "Should you warn a friend before giving harsh feedback?",
+    "Is it better to network with strangers or to deepen old friendships?",
+    "Is small talk useless, or the start of every good relationship?",
+    "Is memorizing still useful in the age of Google?",
+    "Is it better to learn from your own mistakes or from watching others?",
+    "Does re-reading notes actually work, or just feel productive?",
+    "Is teaching someone else the fastest way to learn something?",
+    "Is it okay to learn only what excites you and skip the rest?",
+    "Is watching tutorials without practicing fake learning?",
+    "Is it better to master one skill than to dabble in five?",
+    "Should students be allowed to choose which subjects to drop?",
+    "Is cramming unavoidable or just poor planning?",
+    "Is it better to study with friends or alone?",
+    "Does handwriting notes help more than typing them?",
+    "Are flashcards underrated for every subject?",
+    "Is failing a quiz a better teacher than passing one?",
+    "Is it a waste to learn things you will never use?",
+    "Is it better to fix your weaknesses or to sharpen your strengths?",
+    "Is learning a second language worth it if you already speak English?",
+    "Should learning be graded at all?",
+    "Is it okay to quit an online course halfway?",
+    "Does watching documentaries count as studying?",
+    "Is curiosity more valuable than grades?",
+    "Is it better to ask questions during class or after class?",
+    "Can copying homework teach you anything at all?",
+    "Is it possible to be too dedicated to studying?",
+    "Should schools teach students how to learn, not just what to learn?",
+    "Is memorizing multiplication tables pointless when calculators exist?",
+    "Is working memory more trainable than people think?",
+    "Is listening to educational podcasts real studying?",
+    "Does the perfect focus playlist exist, or is any study music a placebo?",
+    "Does getting better at one subject make you smarter overall?",
+    "Is it okay to skip advanced topics if your basics are still shaky?",
+    "Should grades reflect improvement instead of raw scores?",
+    "Is a bad memory an excuse or a trainable system?",
+    "Do brain-training apps really work?",
+    "Is it better to learn in silence or with background noise?",
+    "Is summer the right time for extra learning or for real rest?",
+    "Does waking up early actually create more hours in your day?",
+    "Is a packed schedule a sign of importance or of poor planning?",
+    "Is it better to do hard tasks first or easy tasks first?",
+    "Should weekends be fully protected from schoolwork?",
+    "Is being early everywhere a habit worth forcing?",
+    "Does watching lectures while eating count as real learning?",
+    "Is it okay to do nothing for an hour without feeling guilty?",
+    "Is procrastination laziness or fear in disguise?",
+    "Are self-set deadlines a reliable productivity tool?",
+    "Does a simple schedule beat a clever one?",
+    "Is deferring requests with a quick later a smart filter or plain avoidance?",
+    "Is time-blocking realistic for students or only for adults?",
+    "Is it better to set reminders or to train your memory?",
+    "Is commuting wasted time or free thinking time?",
+    "Is it possible to stay busy all day and still finish nothing?",
+    "Should screen-time reports shame you into changing?",
+    "Is it easier to work in silence or with light background noise?",
+    "Do quick chores between study sessions sharpen focus or break it?",
+    "Is it okay to schedule breaks like meetings?",
+    "Is a five-minute start enough to beat resistance?",
+    "Does ending your day by planning tomorrow really help?",
+    "Are long deep work sessions better than short frequent ones?",
+    "Is daydreaming pure laziness or quiet rehearsal for real ideas?",
+    "Should you batch similar tasks together to move faster?",
+    "Is it better to keep plans flexible or strict?",
+    "Is hurrying ever worth it?",
+    "Do mornings get an unfair advantage in all the productivity advice?",
+    "Is it okay to drop everything and chase sudden inspiration?",
+    "Should free time be structured or left completely blank?",
+    "Is it possible to save time in all the wrong places?",
+    "Is downtime boring, or the birthplace of good ideas?",
+    "Does rushing through lunch ruin your whole afternoon?",
+    "Is it better to finish early and rest, or to polish until the deadline?",
+    "Is arriving late to meetups stylish, or just disrespectful of other people's time?",
+    "Does keeping a time diary reveal where the day really goes?",
+    "Is efficiency always the goal, or sometimes the enemy of enjoyment?",
+    "Is it okay to be slow if you are steady?",
+    "Does morning-routine content overcomplicate a simple habit?",
+    "Is it better to protect your energy or your schedule when they conflict?",
+    "Is having no time for anything ever true, or always a choice?",
+    "Is sleeping late on weekends really catching up on sleep?",
+    "Is eight hours of sleep a luxury or a basic requirement?",
+    "Is waking up without an alarm possible for everyone?",
+    "Does scrolling in bed ruin sleep more than a late dinner does?",
+    "If you could only choose one, is sleeping early or waking early better?",
+    "Does exercising in the morning energize the rest of your day?",
+    "Is it okay to skip workouts on days you walked a lot?",
+    "Is a 15-minute workout a waste of time?",
+    "Is strength training safe and smart for teenagers?",
+    "Is being sore after a workout a badge of honor or a warning sign?",
+    "Is dessert guilt deserved if the rest of your meals are balanced?",
+    "Is daily milk tea self-care or slow sabotage?",
+    "Is it rude to decline party food when you are watching your diet?",
+    "Is skipping breakfast actually a big deal?",
+    "Is eating without screens better for digestion and focus?",
+    "Does daily stretching prevent more problems than it gets credit for?",
+    "Is it better to go for runs or for long walks?",
+    "Can fixing your posture actually change your mood?",
+    "Is eight glasses of water a day a rule or a myth?",
+    "Can someone be addicted to their phone the way others are to sugar?",
+    "Are cheat days a reset for discipline or a doorway out of it?",
+    "Does chewing slowly matter as much as people claim?",
+    "Is it better to sleep six hours with exercise or eight hours without?",
+    "Is staying up late a choice or a habit that formed itself?",
+    "Is napping right after school better than doing homework first?",
+    "Does fresh air really clear a foggy brain?",
+    "Is playing sports better exercise than structured workouts?",
+    "Is exercising only on weekends still worthwhile?",
+    "Does controlled breathing actually calm you in the moment?",
+    "Is weekly instant noodles a health crime or a harmless treat?",
+    "Is it better to build stamina or strength first?",
+    "Are energy drinks ever a good idea before studying?",
+    "Does watching what you eat matter more than exercising hard?",
+    "Is taking a whole week off from workouts rest or regression?",
+    "Does standing while studying actually help you focus?",
+    "Is morning sun exposure underrated for mood?",
+    "Is daily caffeine okay at a young age?",
+    "Is caring for your teeth a small form of self-respect?",
+    "Does recovering from burnout need full rest or gentle movement?",
+    "Is it okay to feel tired even when you did nothing productive?",
+    "Is allowance better spent now or saved for bigger goals?",
+    "Should budgeting be taught before algebra?",
+    "Is it okay to splurge after saving hard for months?",
+    "Does paying with cash make you spend less than paying digitally?",
+    "Is tracking every single expense smart or obsessive?",
+    "Is buying cheap and replacing often worse than buying quality once?",
+    "Is it fair to earn money from skills you learned for free online?",
+    "Is a small student side hustle resourceful or distracting?",
+    "Is saving up for a phone better than asking for it as a gift?",
+    "Does lending money to friends always end badly?",
+    "Is an emergency fund more important than the latest gadget?",
+    "Should good grades be rewarded with cash?",
+    "Is window shopping a harmless hobby or a spending trigger?",
+    "Is it better to budget weekly or monthly?",
+    "Should teenagers start learning investing early, or is it premature?",
+    "Does a higher price usually mean better quality, or just better marketing?",
+    "Is it smarter to want more money or to want fewer wants?",
+    "Does comparing prices make you a smart buyer or a time waster?",
+    "Is wearing hand-me-downs something to hide or to be proud of?",
+    "Does selling things you no longer use actually feel freeing?",
+    "Is it better to give to charity first or to save first?",
+    "Is saving for later pointless advice while you are still young?",
+    "Is it okay to pay for convenience, like delivery fees?",
+    "Does saving early create secure adults or stingy ones?",
+    "Is splitting bills equally among friends fair or complicated?",
+    "Is it wasteful to collect things you rarely use?",
+    "Are allowance-based chore rewards preparing kids or bribing them?",
+    "Can you be rich in time instead of money?",
+    "Is the claim that money cannot buy happiness wisdom or cope?",
+    "Is money management a skill you can only learn by making mistakes?",
+    "Does crying it out actually help after a hard week?",
+    "Is it okay to cancel plans because you feel emotionally drained?",
+    "Is suppressing anger worse than letting it explode once?",
+    "Does writing an angry message and deleting it actually help?",
+    "Is it brave to admit you are not okay?",
+    "Can failing early in life actually be an advantage?",
+    "Can resilience be learned without ever getting hurt?",
+    "Is venting online when you are upset a bad idea?",
+    "Does forgiving too quickly make you a pushover?",
+    "Is avoiding people who trigger your worst moods smart or avoidant?",
+    "Is rock bottom really the best place to start again?",
+    "Can embarrassment become a teacher instead of an enemy?",
+    "Is holding a grudge justified if the person never changed?",
+    "Is it okay to keep your small wins to yourself during hard times?",
+    "Does naming your emotions actually help control them?",
+    "Is it healthy to keep a list of your worst days?",
+    "Is it possible to be too optimistic about hard situations?",
+    "Does helping others make your own problems feel lighter?",
+    "Is it okay to grieve over small losses like a failed quiz?",
+    "Is resilience a personality trait or a practiced skill?",
+    "Is a mental health day valid even if nothing dramatic happened?",
+    "Does pretending to be fine delay real recovery?",
+    "Is journaling about painful memories healing or re-opening wounds?",
+    "Is it better to bounce back quickly or to sit with feelings first?",
+    "Is never feeling sad at all a red flag?",
+    "Does moping around ever serve a purpose?",
+    "Is it healthy to define yourself by your worst moment?",
+    "Is it okay to be proud just for surviving a bad year?",
+    "Can humor genuinely act as medicine in hard times?",
+    "Is starting over braver than continuing a losing battle?",
+    "Is writing daily better for expression than speaking practice?",
+    "Is it okay to raise your hand only when you are completely sure?",
+    "Does sharing your private writing publicly push growth or break trust?",
+    "Is it better to tell a story with humor or with emotion?",
+    "Should debate be a required school subject?",
+    "Is replying late to a long heartfelt message rude or forgivable?",
+    "Is it better to explain your feelings with words or with actions?",
+    "Can joining a club improve your speaking faster than any class?",
+    "Is staying silent after a conversation goes bad worse than clearing it up?",
+    "Is sarcasm a skill worth practicing or a habit worth dropping?",
+    "Is it better to give long explanations or short honest ones?",
+    "Do letters to your future self actually help?",
+    "Is speaking slowly with pauses better than rushing your sentences?",
+    "Is practicing speeches without an audience a waste of time?",
+    "Should shy students be required to lead group presentations?",
+    "Is apologizing in person always better than over text?",
+    "Is asking 'Can I ask a question?' before every request polite or unnecessary?",
+    "Is storytelling a skill more people should practice on purpose?",
+    "Is it possible to be completely honest without sounding blunt?",
+    "Is it okay to change your position out loud during an argument?",
+    "Should compliments be specific to actually mean something?",
+    "Is it better to listen to respond or to listen to understand?",
+    "Does repeating a question in class make you look less smart?",
+    "Is it okay to open up about your feelings to a teacher?",
+    "Is it better to defend someone publicly or to check on them privately after?",
+    "Are voice messages warmer than typed ones or just lazier?",
+    "Is recording yourself just to catch your filler words worth it?",
+    "Should group chats have agreed rules about late-night messaging?",
+    "Is it okay to simply say you don't know in class?",
+    "Are handwritten thank-you letters outdated or timeless?",
+    "Is quitting social media for a month easier than people think?",
+    "Should you announce breaks from posting or just disappear quietly?",
+    "Is it okay to mute a friend's stories just to see less of them?",
+    "Does curating your feed really change your mood?",
+    "Is it better to post less and live more, even if nobody claps?",
+    "Should daily screen time be capped at two hours?",
+    "Is watching self-improvement videos a substitute for doing the actual work?",
+    "Is a private account healthier than a public one?",
+    "Is it okay to unfollow accounts that make you feel bad about yourself?",
+    "Do milestone posts motivate you or just collect validation?",
+    "Is screen time before bed as harmful as people say?",
+    "Can anyone have a healthy relationship with short-video apps?",
+    "Should phones be put away during family dinner?",
+    "Is replying only once or twice a day a reasonable policy?",
+    "Can doomscrolling be stopped cold turkey?",
+    "Is reading the news daily better for you than weekly?",
+    "Does comparing your real life to someone's highlight reel hurt more than people admit?",
+    "Is keeping a second account just for hobbies a healthy split?",
+    "Is turning off read receipts a small act of self-care?",
+    "Do habit apps gamify growth genuinely or just addict you to streaks?",
+    "Are hours spent on productivity videos an investment or a waste?",
+    "Is being unreachable after 9 PM a fair boundary?",
+    "Should you audit your screen time weekly like a budget?",
+    "Is messaging a friend directly better than liking their posts?",
+    "Is screenshotting kind comments cringe or healthy encouragement?",
+    "Do productivity channels actually make their viewers productive?",
+    "Is using AI to plan your day smart or a crutch?",
+    "Is panicking at 5 percent battery a red flag you should address?",
+    "Should problematic apps be deleted instead of used in moderation?",
+    "Can you build real confidence online without any audience?",
+    "Is it okay to need distance from your family in order to grow?",
+    "Does friendship require constant contact to stay alive?",
+    "Is it better to be close to a few relatives or friendly with all?",
+    "Is it fair to expect your best friend to notice when you are down?",
+    "Is saying no to family errands selfish or healthy?",
+    "Should siblings ever be compared to each other as motivation?",
+    "Is it okay to choose friends your parents do not approve of?",
+    "Does spending time alone make you better company?",
+    "Is it better to resolve family fights immediately or after cooling down?",
+    "Is a friendship where you constantly compete healthy or toxic?",
+    "Is outgrowing friends who no longer share your goals a betrayal?",
+    "Should you keep a friend's secret forever, even after drifting apart?",
+    "Is checking on a quiet friend privately better than calling them out in the group?",
+    "Is it better to give advice when asked or whenever you spot a problem?",
+    "Can you love your family and still need space from them?",
+    "Is apologizing first maturity or weakness?",
+    "Is it okay to keep different friend groups that never meet?",
+    "Does helping a struggling classmate slow you down or teach you more?",
+    "Is it better to keep childhood friends or to make new ones who match your current goals?",
+    "Is it okay to ask your parents for space when they ask too many questions?",
+    "Should friends be allowed to criticize each other's choices?",
+    "Is it possible to be everyone's favorite and still feel lonely?",
+    "Is it better to praise a friend's success loudly or quietly?",
+    "Should you chase friendships that never reciprocate?",
+    "Does gratitude toward family need to be said out loud?",
+    "Is it better to be honest with a friend even if it costs the friendship?",
+    "Is it healthy to have a mentor outside your family?",
+    "Is comparing families on social media ever useful?",
+    "Is it important to tell your parents about your mental health struggles?",
+    "Can a friendship survive when your schedules never align?",
+    "Is comparing your body to celebrities ever motivating?",
+    "Is it okay to change your style just because your friends did?",
+    "Does what you wear genuinely change how confident you feel?",
+    "Is it better to be interesting or to be comfortable being plain?",
+    "Is being the quiet one in class an insult or just a description?",
+    "Is it possible to fully love yourself without changing anything?",
+    "Is wanting to be seen as cool a waste of energy?",
+    "Does a glow-up have to be physical to count?",
+    "Is it healthier to root your identity in what you do or in who you are?",
+    "Is it okay to reinvent yourself completely every year?",
+    "Is it possible to be confident and still insecure about specific things?",
+    "Is being labeled the smart one a box worth escaping?",
+    "Is it okay to not have a defined personality at your age?",
+    "Does looking at old photos help or hurt self-acceptance?",
+    "Is it better to stand out or to fit in during your school years?",
+    "Is feeling awkward in photos a sign you care too much?",
+    "Is it okay to stop explaining yourself to people who already judged you?",
+    "Can you literally be your own best friend?",
+    "Is it better to be admired by many or understood by few?",
+    "Is the urge to reinvent yourself after failure a phase or progress?",
+    "Is it okay to enjoy attention without being attention-seeking?",
+    "Does your music taste define your identity or just decorate it?",
+    "Is it better to accept your flaws or to work on them?",
+    "Can you truly hate a habit yet keep it because it feels like you?",
+    "Is it okay to be proud of something without posting about it?",
+    "Is staying authentic ever a bad strategy?",
+    "Is it okay to present yourself differently at home than outside?",
+    "Does the person you are at fifteen decide who you will be at twenty-five?",
+    "Is it okay to keep parts of your life private even from close friends?",
+    "Is identity something you mostly build or mostly discover?",
+    "Is honesty always the best policy, even when it hurts someone?",
+    "Is it kinder to say what helps or what soothes in the moment?",
+    "Does returning a lost wallet say more about you than your grades do?",
+    "Is generosity a hobby or a habit?",
+    "Is it fair to judge someone by their single worst decision?",
+    "Is it better to be respected than to be liked?",
+    "Are small promises the real foundation of all trust?",
+    "Is it okay to change your values as you grow older?",
+    "Is badmouthing someone worse than confronting them badly to their face?",
+    "In a friendship, is loyalty more important than radical honesty?",
+    "Does losing fair and square build more character than winning does?",
+    "Is it possible to be ambitious without stepping on anyone?",
+    "Does helping when nobody is watching define your character most?",
+    "Is reporting a cheating friend loyalty betrayed or integrity kept?",
+    "Can you be angry at unfairness without becoming unfair yourself?",
+    "Are humility and healthy competitiveness compatible?",
+    "Does money reveal more about a person than hardship does?",
+    "Is it better to hold principles you can defend or values that make life easy?",
+    "Is integrity possible when no one would ever find out?",
+    "Is it okay to forgive someone and still keep firm boundaries?",
+    "Does standing up for yourself always require being loud?",
+    "Is it better to be known for your skill or for your kindness?",
+    "Is admitting you were wrong the hardest form of strength?",
+    "Is it okay to fight for a cause even if no one joins you?",
+    "Does a casual promise deserve the same weight as a formal one?",
+    "Can a person be humble without being invisible?",
+    "Is it better to inherit good values or to build your own?",
+    "Is it ever right to break a rule for the greater good?",
+    "Is patience a talent or a trained habit?",
+    "Is being a good person a goal or just a baseline expectation?",
+    "Is it too early to think seriously about your career at this age?",
+    "Is it better to choose a course for passion or for practicality?",
+    "Is it okay to want a job that pays well but feels boring?",
+    "Does following your passion guarantee happiness or just passion?",
+    "Is preparing for the worst-case scenario wisdom or pessimism?",
+    "Is a dream job real, or a comforting fantasy?",
+    "Is it okay to have no idea what you want to become?",
+    "Should success be measured by income or by impact?",
+    "Is it better to be dangerously ambitious or safely content?",
+    "Is working abroad the right dream or just the popular one?",
+    "Does having a backup plan make you safer or less committed?",
+    "Is it ever truly too late to start over?",
+    "Is it smarter to plan a career around your talents or your interests?",
+    "Does volunteering early meaningfully shape your future career?",
+    "Is choosing stability over adventure small thinking or self-knowledge?",
+    "Is retirement even the right goal for people who love their work?",
+    "Does saving money young buy more freedom than earning more later?",
+    "Is changing careers multiple times smart or unstable?",
+    "Is purpose something you find or something you make?",
+    "Is it okay to define your own version of success?",
+    "Is it better to have a job you love or a job that gives you time?",
+    "Should students try a small business before finishing school?",
+    "Is out-earning your parents young a blessing or extra pressure?",
+    "For beginners, is saving first or investing first more important?",
+    "Is working part-time while studying a distraction or real-world training?",
+    "Is college the only path to a good future?",
+    "Does failing one subject now really decide your whole career?",
+    "Is it okay to aim for a simple life on purpose?",
+    "Is it possible to plan a life you have not yet tasted?",
+    "Is choosing between staying home for family or moving for work the harder call?",
+    "Is growing older the same as growing better?",
+    "Is doing nothing on a weekend restorative or wasteful?",
+    "Is it possible to outgrow your hometown?",
+    "Does exploring your own city count as real travel?",
+    "Is it better to be endlessly curious or finally satisfied?",
+    "Does everyone have a hidden talent, or do some people never find one?",
+    "Is it okay to be ordinary?",
+    "Is trying to seem interesting more tiring than being interested?",
+    "Is it better to leave places and people better than you found them?",
+    "Is taking the scenic route in life a detour or the point?",
+    "Does chasing comfort quietly slow your growth?",
+    "Is it better to collect experiences or to collect things?",
+    "Is staying a kid at heart a strength or an excuse?",
+    "Can real growth happen without any discomfort?",
+    "Is it better to matter to many or be important to a few?",
+    "Is it okay to enjoy your own company more than parties?",
+    "Is self-improvement content making people better or just busier?",
+    "Does growth always look slow day by day and sudden in hindsight?",
+    "Is it okay to stop improving once you are genuinely happy?",
+    "Is doing your best on an ordinary Tuesday a form of growth?",
+  ];
+
+  var MARKERS = {
+    O: {
+      label: "Opinion",
+      phrases: [
+        "i think", "i believe", "in my opinion", "for me", "i prefer", "i would say",
+        "i'd say", "sa tingin ko", "sa palagay ko", "para sa akin", "para sakin",
+        "mas gusto ko", "paborito ko", "favorite ko", "i agree", "i disagree",
+        "sang-ayon ako", "hindi ako agree", "my favorite", "the best", "the worst",
+        "opinyon ko", "sa opinion ko", "opinion ko", "masasabi ko", "i feel like", "naniniwala ako", "i love", "i like"
+      ]
+    },
+    R: {
+      label: "Reason",
+      phrases: [
+        "because", "since", "the reason", "reason is", "dahil", "kasi", "porke",
+        "ang dahilan", "kaya ko", "due to", "the main reason", "because of", "first of all",
+        "mainly because", "uno", "number one is", "ito ang dahilan", "dahilan kung bakit"
+      ]
+    },
+    E: {
+      label: "Example",
+      phrases: [
+        "for example", "for instance", "such as", "halimbawa", "example",
+        "gaya ng", "imagine", "like when", "like the time", "last week", "one time",
+        "sabi nga nila", "according to", "research says", "based on", "when i was",
+        "noong", "take for instance", "take for example", "kumbaga"
+      ]
+    },
+    O2: {
+      label: "Wrap-up",
+      phrases: [
+        "so", "therefore", "thus", "in conclusion", "that's why", "kaya", "overall",
+        "bottom line", "bottomline", "in short", "sa madaling salita", "sa buod", "again", "as i said",
+        "ultimately", "to sum up", "sa huli", "edi", "ang point ko", "yun lang", "that is why"
+      ]
+    }
+  };
+
+  var HARD_FILLERS = ["uh", "um", "uhm", "er", "ah", "hmm", "ano", "e", "ung", "yung"];
+  var SOFT_FILLERS = ["you know", "actually", "basically", "literally", "parang", "bale", "kumbaga", "i mean", "di ba", "well", "kind of", "sort of", "ganun", "medyo"];
+
+  var STRONG = ["definitely", "absolutely", "certainly", "for sure", "no doubt", "i'm sure", "im sure", "i am sure", "i'm certain", "i am certain", "clearly", "obviously", "walang duda", "sigurado ako", "tiyak ko", "panigurado"];
+  var HEDGES = ["maybe", "perhaps", "possibly", "probably", "i guess", "i suppose", "not sure", "not too sure", "no idea", "it depends", "or something", "baka", "siguro", "ewan"];
+
+  var SAMPLES = [
+    {
+      q: "Should students be allowed to use phones in school?",
+      a: "I think students should be allowed to use phones in school, as long as it's during breaks. <b>I believe this</b> because phones are useful for research and communication with parents — hindi lahat may load or laptop sa bahay. <b>For example</b>, during our group project last year, we used a classmate's phone to look up sources and message our teacher, and we finished early. <b>So</b>, sa tingin ko again, phones can help — it's all about responsible use, not a total ban."
+    },
+    {
+      q: "Coffee o milk tea — which is the better drink?",
+      a: "For me, milk tea ang mas masarap na drink. <b>Sa tingin ko</b>, it hits the spot more than coffee because hindi siya nakakagising ng sobra tapos ang daming flavors na pwedeng piliin. <b>Halimbawa</b>, noong mga exam week namin, ang coffee ginawa lang naming sagot sa tulog, pero ang milk tea ang naging reward tuwing tapos na ang isang subject. <b>Kaya</b>, bottom line — milk tea pa rin ako; it's treat tayo, hindi eye opener."
+    }
+  ];
+
+  var state = {
+    recording: false,
+    finalText: "",
+    interimText: "",
+    startTime: null,
+    timerId: null,
+    seconds: 0,
+    mode: "mic",
+    topic: TOPICS[0],
+    recognition: null,
+    audioStats: null
+  };
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  function setBanner(msg) {
+    var b = $("banner");
+    if (!msg) { b.classList.add("hidden"); return; }
+    b.textContent = msg;
+    b.classList.remove("hidden");
+  }
+
+  function pickTopic() {
+    return TOPICS[Math.floor(Math.random() * TOPICS.length)];
+  }
+
+  function setTopic(t, speakIt) {
+    t = (t || "").trim();
+    if (!t) { t = pickTopic(); }
+    state.topic = t;
+    $("topicText").textContent = t;
+    var sample = SAMPLES.find(function (s) { return s.q === t; });
+    if (sample) { $("sampleAnswer").innerHTML = "<b>Q:</b> " + sample.q + "<br><br>" + sample.a; }
+    else { $("sampleAnswer").innerHTML = "No built-in sample for this one, pero ito ang template:<br><br>" +
+      "<b>O</b> — I think / Sa tingin ko… (your opinion)<br>" +
+      "<b>R</b> — …because / kasi… (your reason)<br>" +
+      "<b>E</b> — For example / Halimbawa… (a story or proof)<br>" +
+      "<b>O</b> — So / Kaya… (opinion again, wrap up)"; }
+    if (speakIt) { speakQueued(t); }
+  }
+
+  function speakQueued() {
+    try {
+      if (!("speechSynthesis" in window)) { return; }
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(arguments[0] || $("topicText").textContent);
+      u.rate = 1;
+      u.lang = "en-US";
+      window.speechSynthesis.speak(u);
+    } catch (e) { }
+  }
+
+  function beep(freq) {
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) { return; }
+      if (!window.__oreoAC) { window.__oreoAC = new AC(); }
+      var ac = window.__oreoAC;
+      if (ac.state === "suspended") { ac.resume().catch(function () {}); }
+      var o = ac.createOscillator(), g = ac.createGain();
+      o.connect(g); g.connect(ac.destination);
+      o.type = "sine";
+      o.frequency.value = freq || 880;
+      g.gain.setValueAtTime(0.12, ac.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + 0.25);
+      o.start();
+      o.stop(ac.currentTime + 0.26);
+    } catch (e) { }
+  }
+
+  function ensureRecognition() {
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { return null; }
+    var r = new SR();
+    r.continuous = true;
+    r.interimResults = true;
+    r.maxAlternatives = 1;
+    r.lang = $("langSelect").value || "en-US";
+    return r;
+  }
+
+  function fmtTime(s) {
+    var m = Math.floor(s / 60);
+    var ss = s % 60;
+    return m + ":" + (ss < 10 ? "0" : "") + ss;
+  }
+
+  function startTimer() {
+    state.seconds = 0;
+    $("timer").textContent = "0:00";
+    state.timerId = setInterval(function () {
+      state.seconds += 1;
+      $("timer").textContent = fmtTime(state.seconds);
+
+      var said = (state.finalText + (state.interimText ? " " + state.interimText : "")).trim();
+      var wordsNow = said ? said.split(/\s+/).length : 0;
+      var liveWpm = state.seconds >= 6 ? Math.round(wordsNow / (state.seconds / 60)) : 0;
+      var quiet = audioMon.silenceStart ? (Date.now() - audioMon.silenceStart) / 1000 : 0;
+      var msg = liveWpm ? "⚡ ~" + liveWpm + " wpm" : "🎙 …";
+      if (liveWpm && liveWpm < 90) { msg += " · 🐢 bumilis"; } else if (liveWpm > 190) { msg += " · 🚀 bagalan"; }
+      if (quiet >= 1) { msg += " · 🔇 " + quiet.toFixed(0) + "s"; }
+      $("status").textContent = msg;
+
+      var lim = parseInt($("limitSelect").value, 10);
+      if (lim && state.seconds >= lim && state.recording) {
+        beep(660);
+        stopMic();
+        if ($("autoRate").checked) { setTimeout(rateNow, 250); }
+        else { $("status").textContent = "⏰ Time's up! Press Rate my OREO."; }
+      }
+    }, 1000);
+  }
+
+  var prepId = null;
+  state.prepLeft = 0;
+
+  function clearPrep() {
+    if (prepId) { clearInterval(prepId); prepId = null; }
+    state.prepLeft = 0;
+    $("prepOverlay").classList.add("hidden");
+  }
+
+  function cancelPrepViaKey() {
+    clearPrep();
+    $("btnStop").classList.add("hidden");
+    $("btnStop").textContent = "⏹ Stop & Rate";
+    $("status").textContent = "Prep cancelled";
+  }
+
+  function startPrep() {
+    var s = parseInt($("prepSelect").value, 10);
+    if (!s) { startMic(); return; }
+    clearPrep();
+    state.prepLeft = s;
+    $("prepNum").textContent = s;
+    $("prepOverlay").classList.remove("hidden");
+    $("btnStop").classList.remove("hidden");
+    $("btnStop").textContent = "✋ Skip prep";
+    $("status").textContent = "🧠 Prep: " + s + "s — plan your O-R-E-O!";
+    beep(990);
+    prepId = setInterval(function () {
+      state.prepLeft -= 1;
+      if (state.prepLeft <= 0) {
+        $("prepNum").textContent = "Go!";
+        clearPrep();
+        $("btnStop").textContent = "⏹ Stop & Rate";
+        $("status").textContent = "Connecting to mic…";
+        beep(1320);
+        startMic();
+      } else {
+        $("prepNum").textContent = state.prepLeft;
+        $("status").textContent = "🧠 Prep: " + state.prepLeft + "s…";
+        if (state.prepLeft <= 3) { beep(1100); }
+      }
+    }, 1000);
+  }
+
+  function stopTimer() {
+    if (state.timerId) { clearInterval(state.timerId); state.timerId = null; }
+  }
+
+  function renderLive() {
+    var box = $("transcriptBox");
+    var finals = state.finalText ? state.finalText.replace(/</g, "&lt;") : "";
+    var interim = state.interimText ? ' <span class="interim">' + state.interimText.replace(/</g, "&lt;") + "</span>" : "";
+    if (!finals && !interim) {
+      box.innerHTML = '<span class="placeholder">' + (state.recording ? "Listening… say something!" : "Your speech will appear here…") + "</span>";
+      return;
+    }
+    box.innerHTML = finals + interim;
+  }
+
+  function startRecognition() {
+    var r = ensureRecognition();
+    if (!r) { return false; }
+    state.recognition = r;
+
+    r.onstart = function () { $("status").textContent = "Listening… go, OREO na! 🍪"; };
+
+    r.onresult = function (event) {
+      var interim = "";
+      for (var i = event.resultIndex; i < event.results.length; i++) {
+        var res = event.results[i];
+        if (res.isFinal) {
+          var t = res[0].transcript.trim();
+          if (t) {
+            state.finalText += (state.finalText ? " " : "") + t;
+          }
+        } else {
+          interim += res[0].transcript;
+        }
+      }
+      state.interimText = interim.trim();
+      renderLive();
+    };
+
+    r.onerror = function (event) {
+      if (event.error === "not-allowed" || event.error === "service-not-allowed") {
+        setBanner("Mic was blocked nya. Check browser permissions (padlock icon) or switch to Type mode ⌨️.");
+        stopMic();
+      } else if (event.error === "no-speech") {
+        $("status").textContent = "Hindi kita marinig… try mo ulit.";
+      }
+    };
+
+    r.onend = function () {
+      if (state.recording) {
+        setTimeout(function () {
+          if (state.recording) {
+            try { r.start(); }
+            catch (e) { stopMic(); }
+          }
+        }, 250);
+      }
+    };
+
+    try { r.start(); return true; } catch (e) { return false; }
+  }
+
+  function startMic() {
+    if (state.recording) { return; }
+    state.finalText = "";
+    state.interimText = "";
+    state.audioStats = null;
+    state.recording = true;
+    document.body.classList.add("recording");
+    $("btnStop").classList.remove("hidden");
+    $("status").textContent = "Connecting to mic…";
+    var ok = startRecognition();
+    if (!ok) {
+      setBanner("Speech recognition not supported or failed here. Gamitin ang Chrome/Edge, o Type mode ⌨️.");
+      stopMic();
+      return;
+    }
+    setBanner(null);
+    startTimer();
+    if ($("pauseTracker").checked) { startAudioMonitor(); }
+    renderLive();
+  }
+
+  function stopMic(auto) {
+    state.audioStats = stopAudioMonitor();
+    clearPrep();
+    state.recording = false;
+    document.body.classList.remove("recording");
+    $("btnStop").classList.add("hidden");
+    $("btnStop").textContent = "⏹ Stop & Rate";
+    stopTimer();
+    if (state.recognition) {
+      try { state.recognition.stop(); } catch (e) { }
+      state.recognition = null;
+    }
+    state.interimText = "";
+    $("status").textContent = "Stopped";
+    renderLive();
+    if (auto && state.mode === "mic" && state.finalText.trim()) {
+      setTimeout(rateNow, 200);
+    }
+  }
+
+  function escRe(s) {
+    return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+
+  function findPhrase(lowerText, phrase) {
+    var m = lowerText.match(new RegExp("\\b" + escRe(phrase) + "\\b"));
+    return m ? m.index : -1;
+  }
+
+  function highlightMarkers(text, results) {
+    function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+    var all = [];
+    ["O", "R", "E", "O2"].forEach(function (k) {
+      MARKERS[k].phrases.forEach(function (p) {
+        var re = new RegExp("\\b" + escRe(p) + "\\b", "gi");
+        var m;
+        while ((m = re.exec(text)) !== null) {
+          all.push({ start: m.index, end: m.index + m[0].length, k: k });
+          if (m.index === re.lastIndex) { re.lastIndex++; }
+        }
+      });
+    });
+    all.sort(function (a, b) {
+      return a.start - b.start || (b.end - b.start) - (a.end - a.start);
+    });
+    var chosen = [], cursor = 0;
+    all.forEach(function (m) {
+      if (m.start < cursor) { return; }
+      chosen.push(m);
+      cursor = m.end;
+    });
+    var html = "", pos = 0;
+    chosen.forEach(function (m) {
+      html += esc(text.slice(pos, m.start));
+      html += "<span class='mk mk-" + m.k + "'>" + esc(text.slice(m.start, m.end)) + "</span>";
+      pos = m.end;
+    });
+    html += esc(text.slice(pos));
+    return html;
+  }
+
+  function countWord(word, lowerText) {
+    var re = new RegExp("\\b" + escRe(word) + "\\b", "g");
+    var res = lowerText.match(re);
+    return res ? res.length : 0;
+  }
+
+  function countPhrase(phrase, lowerText) {
+    var re = new RegExp("\\b" + escRe(phrase) + "\\b", "g");
+    var res = lowerText.match(re);
+    return res ? res.length : 0;
+  }
+
+  var audioMon = { stream: null, ctx: null, analyser: null, buf: null, timer: null, segs: [], silenceStart: null, voiceAt: null };
+
+  function startAudioMonitor() {
+    stopAudioMonitor();
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { return; }
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+      audioMon.stream = stream;
+      try {
+        var AC = window.AudioContext || window.webkitAudioContext;
+        audioMon.ctx = new AC();
+        var src = audioMon.ctx.createMediaStreamSource(stream);
+        var an = audioMon.ctx.createAnalyser();
+        an.fftSize = 1024;
+        src.connect(an);
+        audioMon.analyser = an;
+        audioMon.buf = new Float32Array(an.fftSize);
+        audioMon.segs = [];
+        audioMon.silenceStart = null;
+        audioMon.voiceAt = null;
+        audioMon.timer = setInterval(monitorLoop, 90);
+      } catch (e) { stopAudioMonitor(); }
+    }, function () { });
+  }
+
+  function monitorLoop() {
+    if (!audioMon.analyser || !state.recording) { return; }
+    var an = audioMon.analyser, buf = audioMon.buf, n = buf.length;
+    var sum = 0, i, v;
+    if (an.getFloatTimeDomainData) {
+      an.getFloatTimeDomainData(buf);
+      for (i = 0; i < n; i++) { v = buf[i]; sum += v * v; }
+    } else {
+      var bx = new Uint8Array(n);
+      an.getByteTimeDomainData(bx);
+      for (i = 0; i < n; i++) { v = (bx[i] - 128) / 128; sum += v * v; }
+    }
+    var rms = Math.sqrt(sum / n);
+    var now = Date.now();
+    if (rms > 0.012) {
+      if (audioMon.voiceAt === null) { audioMon.voiceAt = now; }
+      if (audioMon.silenceStart !== null) {
+        audioMon.segs.push(now - audioMon.silenceStart);
+        audioMon.silenceStart = null;
+      }
+    } else if (audioMon.voiceAt !== null && audioMon.silenceStart === null) {
+      audioMon.silenceStart = now;
+    }
+  }
+
+  function stopAudioMonitor() {
+    if (audioMon.timer) { clearInterval(audioMon.timer); audioMon.timer = null; }
+    var now = Date.now();
+    if (audioMon.voiceAt !== null && audioMon.silenceStart !== null) {
+      audioMon.segs.push(now - audioMon.silenceStart);
+      audioMon.silenceStart = null;
+    }
+    var stats = null;
+    if (audioMon.voiceAt !== null) {
+      var voiced = Math.max(1, now - audioMon.voiceAt);
+      var silence = 0, pauses = 0, longest = 0;
+      audioMon.segs.forEach(function (d) {
+        if (d >= 250) { silence += d; }
+        if (d >= 600) { pauses += 1; }
+        if (d > longest) { longest = d; }
+      });
+      if (voiced > 1500) {
+        stats = { ok: true, silencePct: Math.round(silence / voiced * 100), pauseCount: pauses, longest: Math.round(longest / 100) / 10 };
+      }
+    }
+    if (audioMon.ctx) { try { audioMon.ctx.close(); } catch (e) { } audioMon.ctx = null; }
+    if (audioMon.stream) {
+      audioMon.stream.getTracks().forEach(function (t) { t.stop(); });
+      audioMon.stream = null;
+    }
+    audioMon.analyser = null;
+    audioMon.voiceAt = null;
+    audioMon.segs = [];
+    return stats;
+  }
+
+  function computeDelivery(hardPer100, softPer100, wpm, ttr, audio) {
+    var fillerScore = Math.max(0, Math.min(40, Math.round(40 - hardPer100 * 3 - softPer100 * 1.2)));
+    var pauseScore = 15, silencePct = null, pauseCount = null, longest = null;
+    if (audio && audio.ok) {
+      silencePct = audio.silencePct;
+      pauseCount = audio.pauseCount;
+      longest = audio.longest;
+      pauseScore = silencePct <= 5 ? 30 : silencePct <= 10 ? 24 : silencePct <= 18 ? 15 : silencePct <= 30 ? 6 : 0;
+      if (pauseCount > 8) { pauseScore = Math.round(pauseScore * 0.6); }
+    }
+    var paceScore = !wpm ? 10 : (wpm >= 110 && wpm <= 160) ? 20 : (wpm >= 85 && wpm <= 190) ? 14 : (wpm >= 70 && wpm <= 220) ? 8 : 3;
+    var varScore = ttr >= 60 ? 10 : ttr >= 45 ? 7 : ttr >= 30 ? 4 : 2;
+    return {
+      fillers: fillerScore, pauses: pauseScore, pace: paceScore, variety: varScore,
+      total: fillerScore + pauseScore + paceScore + varScore,
+      silencePct: silencePct, pauseCount: pauseCount, longest: longest
+    };
+  }
+
+  function analyze(text, seconds, audio) {
+    var lower = " " + text.toLowerCase().replace(/[’']/g, "'") + " ";
+    var len = text.length;
+
+    var results = {};
+    ["O", "R", "E", "O2"].forEach(function (k) {
+      var best = -1, hit = "";
+      MARKERS[k].phrases.forEach(function (p) {
+        var idx = findPhrase(lower, p);
+        if (idx !== -1 && (best === -1 || idx < best)) { best = idx; hit = p; }
+      });
+      results[k] = { index: best, phrase: hit };
+    });
+
+    var zones = {
+      O: [0.0, 0.40],
+      R: [0.08, 0.65],
+      E: [0.15, 0.80],
+      O2: [0.55, 1.01]
+    };
+
+    var scores = {};
+    ["O", "R", "E", "O2"].forEach(function (k) {
+      var idx = results[k].index;
+      if (idx === -1) { scores[k] = 0; return; }
+      var frac = idx / Math.max(len, 1);
+      var z = zones[k];
+      var inZone = frac >= z[0] && frac <= z[1];
+      scores[k] = inZone ? 25 : 14;
+    });
+
+    var wordsArr = text.trim().split(/\s+/).filter(Boolean);
+    var wordCount = wordsArr.length;
+    var uniqSet = new Set(wordsArr.map(function (w) {
+      return w.toLowerCase().replace(/[^a-zñ'’-]/g, "");
+    }));
+    var ttr = wordCount ? Math.round(uniqSet.size / wordCount * 100) : 0;
+    var sentenceCount = text.split(/[.!?]+/).map(function (s) { return s.trim(); }).filter(function (s) { return s.split(/\s+/).length > 2; }).length;
+
+    var fillerDetail = {}, hardCount = 0, softCount = 0;
+    HARD_FILLERS.forEach(function (w) {
+      var c = countWord(w, lower);
+      if (c) { fillerDetail[w] = (fillerDetail[w] || 0) + c; hardCount += c; }
+    });
+    SOFT_FILLERS.forEach(function (w) {
+      var c = countWord(w, lower);
+      if (c) { fillerDetail[w] = (fillerDetail[w] || 0) + c; softCount += c; }
+    });
+    var fillerCount = hardCount + softCount;
+    var hardPer100 = wordCount ? (hardCount / wordCount) * 100 : 0;
+    var softPer100 = wordCount ? (softCount / wordCount) * 100 : 0;
+
+    var stanceCount = 0, stanceHits = [], hedgeCount = 0, hedgeDetail = {};
+    STRONG.forEach(function (p) {
+      var c = countPhrase(p, lower);
+      if (c) { stanceCount += c; stanceHits.push(p); }
+    });
+    HEDGES.forEach(function (w) {
+      var c = countPhrase(w, lower);
+      if (c) { hedgeCount += c; hedgeDetail[w] = (hedgeDetail[w] || 0) + c; }
+    });
+    var hedgePer100 = wordCount ? (hedgeCount / wordCount) * 100 : 0;
+
+    var stanceScore = stanceCount === 0 ? 12 : stanceCount === 1 ? 24 : stanceCount === 2 ? 31 : 35;
+    var hedgeScore = hedgePer100 <= 1 ? 35 : hedgePer100 <= 2.5 ? 26 : hedgePer100 <= 5 ? 15 : 5;
+    var confFillScore = (hardPer100 <= 1.5 && softPer100 <= 4) ? 30 : hardPer100 <= 3.5 ? 22 : hardPer100 <= 7 ? 12 : 4;
+    var conf = {
+      total: stanceScore + hedgeScore + confFillScore,
+      stance: stanceScore, hedge: hedgeScore, fillConv: confFillScore,
+      stanceCount: stanceCount, stanceHits: stanceHits,
+      hedgeCount: hedgeCount, hedgeDetail: hedgeDetail, hedgePer100: hedgePer100
+    };
+
+    var gate = 0;
+    if (wordCount < 15) { gate = 1; }
+    else if (wordCount < 35) { gate = 2; }
+
+    var wpm = seconds > 3 ? Math.round(wordCount / (seconds / 60)) : 0;
+
+    var total = scores.O + scores.R + scores.E + scores.O2;
+    if (gate === 1) { total = Math.round(total * 0.4); }
+    else if (gate === 2 && total > 30) { total = Math.round(total * 0.85); }
+    total = Math.max(0, Math.min(100, total));
+
+    var delivery = computeDelivery(hardPer100, softPer100, wpm, ttr, audio);
+
+    return {
+      results: results,
+      scores: scores,
+      total: total,
+      wordCount: wordCount,
+      sentenceCount: sentenceCount,
+      fillerCount: fillerCount,
+      hardCount: hardCount,
+      softCount: softCount,
+      hardPer100: hardPer100,
+      softPer100: softPer100,
+      fillerDetail: fillerDetail,
+      conf: conf,
+      wpm: wpm,
+      ttr: ttr,
+      delivery: delivery,
+      gate: gate,
+      seconds: seconds
+    };
+  }
+
+  function scoreColor(p) {
+    if (p >= 80) { return "var(--green)"; }
+    if (p >= 50) { return "var(--yellow)"; }
+    return "var(--red)";
+  }
+
+  function gradeFor(t) {
+    if (t >= 85) { return { g: "🏆 Expert Orator", s: "Grabe, complete OREO at malinis! Next level harder questions." }; }
+    if (t >= 65) { return { g: "👏 Solid OREO", s: "May structure na, ayos lang ang linis konti pa." }; }
+    if (t >= 40) { return { g: "🌱 Getting there", s: "Kulang pa ang some parts — checklist below." }; }
+    return { g: "💪 Keep practicing", s: "Dahan-dahan lang, isipin ang O-R-E-O flow." };
+  }
+
+  function componentFeedback(k, r, s) {
+    var label = MARKERS[k].label;
+    var hint = {
+      O: "Start clearly: “I think…” / “Sa tingin ko…”",
+      R: "Support it: “…because…” / “…kasi…”",
+      E: "Make it concrete: “For example…” / “Halimbawa…” — story, number, or time",
+      O2: "Wrap it: “So…” / “That’s why…” / “Kaya…”"
+    }[k];
+    if (!r.phrase) {
+      return { cls: "bad", html: "<b>" + label + ":</b> missing ✗ — " + hint };
+    }
+    if (s < 25) {
+      return { cls: "warn", html: "<b>" + label + ":</b> detected (" + r.phrase + ") but in the wrong spot — " + hint };
+    }
+    return { cls: "good", html: "<b>" + label + ":</b> detected ✓ “" + r.phrase + "” placed nicely" };
+  }
+
+  function delPhrase(t) {
+    if (t >= 85) { return "🎤 Delivery: crisp & clear"; }
+    if (t >= 65) { return "👏 Delivery: solid"; }
+    if (t >= 40) { return "🌱 Delivery: working on it"; }
+    return "💪 Delivery: keep practicing";
+  }
+
+  function animateNum(el, target) {
+    var num = 0;
+    var step = Math.max(1, Math.ceil(target / 30));
+    var iv = setInterval(function () {
+      num += step;
+      if (num >= target) { num = target; clearInterval(iv); }
+      el.textContent = num;
+    }, 20);
+  }
+
+  function setRing(ringEl, pct) {
+    ringEl.style.setProperty("--pct", pct);
+    ringEl.style.setProperty("--ring-color", scoreColor(pct));
+  }
+
+  function addBar(container, label, sc, max, numSuffix) {
+    var item = document.createElement("div");
+    item.className = "bar-item";
+    item.innerHTML =
+      "<div class='bar-label'><b>" + label + "</b></div>" +
+      "<div class='bar-track'><div class='bar-fill'></div></div>" +
+      "<div class='bar-num'>" + sc + "/" + max + (numSuffix || "") + "</div>";
+    var fill = item.querySelector(".bar-fill");
+    container.appendChild(item);
+    setTimeout(function () {
+      fill.style.setProperty("--bar-color", sc >= max * 0.82 ? "var(--green)" : sc > 0 ? "var(--yellow)" : "var(--red)");
+      fill.style.width = (sc / max * 100) + "%";
+    }, 50);
+  }
+
+  function showResult(text, res) {
+    var card = $("resultCard");
+    card.classList.remove("hidden");
+
+    var g = gradeFor(res.total);
+    var d = res.delivery;
+    var c = res.conf;
+    $("gradeText").textContent = g.g;
+    $("gradeSub").textContent = d ? delPhrase(d.total) + " · " + d.total + "/100" : "Delivery: hindi na-measure (typed answer)";
+
+    var prev = loadHistory()[0];
+    var prevO = prev ? prev.score : null;
+    var prevD = (prev && prev.d !== undefined && prev.d !== null) ? prev.d : null;
+    var prevC = (prev && prev.c !== undefined && prev.c !== null) ? prev.c : null;
+    var badge = $("deltaBadge");
+    if (prevO === null || prevO === undefined) {
+      badge.innerHTML = "una mong attempt ngayong session 🍪";
+    } else {
+      var dof = res.total - prevO;
+      var txt = "OREO " + (dof > 0
+        ? "<span style='color:var(--green);font-weight:800'>▲ +" + dof + "</span>"
+        : dof < 0 ? "<span style='color:var(--red);font-weight:800'>▼ " + dof + "</span>"
+        : "<span style='color:var(--muted)'>— 0</span>") + " vs last (" + prevO + ")";
+      if (prevD !== null && d) {
+        var dd = d.total - prevD;
+        txt += " · 🎤 " + (dd > 0
+          ? "<span style='color:var(--green);font-weight:800'>+" + dd + "</span>"
+          : dd < 0 ? "<span style='color:var(--red);font-weight:800'>" + dd + "</span>"
+          : "<span style='color:var(--muted)'>±0</span>");
+      }
+      if (prevC !== null) {
+        var dc = c.total - prevC;
+        txt += " · 🦁 " + (dc > 0
+          ? "<span style='color:var(--green);font-weight:800'>+" + dc + "</span>"
+          : dc < 0 ? "<span style='color:var(--red);font-weight:800'>" + dc + "</span>"
+          : "<span style='color:var(--muted)'>±0</span>");
+      }
+      badge.innerHTML = txt;
+    }
+
+    setRing($("ringOreo"), res.total);
+    $("ringOreoNum").textContent = "";
+    animateNum($("ringOreoNum"), res.total);
+    if (d) {
+      setRing($("ringDel"), d.total);
+      $("ringDelNum").textContent = "";
+      animateNum($("ringDelNum"), d.total);
+    } else {
+      setRing($("ringDel"), 0);
+      $("ringDelNum").textContent = "—";
+    }
+    setRing($("ringConf"), c.total);
+    $("ringConfNum").textContent = "";
+    animateNum($("ringConfNum"), c.total);
+
+    var bars = $("bars");
+    bars.innerHTML = "";
+    ["O", "R", "E", "O2"].forEach(function (k) {
+      var sc = res.scores[k];
+      var label = MARKERS[k].label + (res.results[k].phrase ? " <span class='badge ok'>✓</span>" : " <span class='badge no'>✗</span>");
+      addBar(bars, label, sc, 25);
+    });
+
+    var delWrap = $("delTitle"), barsDel = $("barsDel");
+    if (d) {
+      delWrap.classList.remove("hidden");
+      barsDel.classList.remove("hidden");
+      barsDel.innerHTML = "";
+      addBar(barsDel, "🚫 Fillers", d.fillers, 40);
+      addBar(barsDel, "⏸ Pauses", d.pauses, 30);
+      addBar(barsDel, "⚡ Pace", d.pace, 20);
+      addBar(barsDel, "🎭 Variety", d.variety, 10);
+    } else {
+      delWrap.classList.add("hidden");
+      barsDel.innerHTML = "";
+    }
+
+    var confWrap = $("confTitle"), barsConf = $("barsConf");
+    confWrap.classList.remove("hidden");
+    barsConf.classList.remove("hidden");
+    barsConf.innerHTML = "";
+    addBar(barsConf, "🦁 Stance", c.stance, 35);
+    addBar(barsConf, "🙈 Hedging", c.hedge, 35);
+    addBar(barsConf, "🚫 Fillers", c.fillConv, 30);
+
+    var fb = [];
+    ["O", "R", "E", "O2"].forEach(function (k) { fb.push(componentFeedback(k, res.results[k], res.scores[k])); });
+
+    if (res.gate) {
+      fb.push({ cls: "bad", html: "<b>Too short:</b> " + res.wordCount + " words only. Target at least 60-100 words para makumpleto ang OREO — one sentence per part." });
+    }
+
+    if (res.hardCount || res.softCount) {
+      var parts = Object.keys(res.fillerDetail)
+        .sort(function (a, b) { return res.fillerDetail[b] - res.fillerDetail[a]; })
+        .slice(0, 6)
+        .map(function (w) { return w + " ×" + res.fillerDetail[w]; })
+        .join(" · ");
+      var fcls = res.hardPer100 > 7 ? "bad" : res.hardPer100 > 3.5 ? "warn" : "good";
+      var ftip = res.hardPer100 > 3.5
+        ? " — palitan ang fillers ng 1 segundo na katahimikan. Breathe, isip, saka magpatuloy. 🧘"
+        : res.softPer100 > 6
+          ? " — those crutch words pwede nang tanggalin: sabihin nang diretso for a stronger impact."
+          : "";
+      fb.push({ cls: fcls, html: "<b>Fillers:</b> " + parts + ftip });
+    } else {
+      fb.push({ cls: "good", html: "<b>Fillers:</b> zero! Linis ng presentasyon 👌" });
+    }
+
+    if (d) {
+      if (d.longest !== null) {
+        if (d.silencePct > 14 || d.pauseCount > 5) {
+          fb.push({
+            cls: "warn",
+            html: "<b>Pauses:</b> " + d.silencePct + "% dead air · " + d.pauseCount + " long pauses (pinakamahaba " + d.longest + "s). Planning is good, pero mag-isip nang sabay-sabay nang maikli — hindi paulit-ulit na silent gaps."
+          });
+        } else {
+          fb.push({ cls: "good", html: "<b>Pauses:</b> " + d.silencePct + "% silence, pinakamahabang pahinga " + d.longest + "s — controlled 👌" });
+        }
+      }
+      if (res.softPer100 > 6 && res.softCount >= 3) {
+        fb.push({ cls: "warn", html: "<b>Crutch words:</b> " + res.softCount + " soft fillers (" + res.softPer100.toFixed(0) + " per 100 words) — quantity over quality is not communication. State it plainly." });
+      }
+    } else {
+      fb.push({ cls: "warn", html: "<b>Pauses:</b> hindi na-measure sa Type mode — subukan sa mic mode para ma-analyze ang dead air." });
+    }
+
+    if (res.wpm && res.wpm < 90) {
+      fb.push({ cls: "warn", html: "<b>Pace:</b> " + res.wpm + " wpm — medyo mabagal. Confident pacing is 110-160 wpm." });
+    } else if (res.wpm > 190) {
+      fb.push({ cls: "warn", html: "<b>Pace:</b> " + res.wpm + " wpm — masyadong mabilis! Breathe between sentences." });
+    } else if (res.wpm) {
+      fb.push({ cls: "good", html: "<b>Pace:</b> " + res.wpm + " wpm — natural 👌" });
+    }
+    if (res.sentenceCount >= 4) {
+      fb.push({ cls: "good", html: "<b>Structure:</b> " + res.sentenceCount + " sentences — mas madaling sundan." });
+    }
+
+    if (c.stanceCount === 0) {
+      fb.push({ cls: "warn", html: "<b>Stance:</b> walang strong marker — dagdagan ng “definitely”, “I'm sure”, “clearly”, o “sigurado ako” para may conviction." });
+    } else {
+      fb.push({ cls: "good", html: "<b>Stance:</b> " + c.stanceCount + " strong marker" + (c.stanceCount > 1 ? "s" : "") + " (“" + c.stanceHits[0] + "”) — may conviction 👌" });
+    }
+
+    if (c.hedgeCount) {
+      var hparts = Object.keys(c.hedgeDetail)
+        .sort(function (a, b) { return c.hedgeDetail[b] - c.hedgeDetail[a]; })
+        .slice(0, 6)
+        .map(function (w) { return w + " ×" + c.hedgeDetail[w]; })
+        .join(" · ");
+      var hcls = c.hedgePer100 > 5 ? "bad" : c.hedgePer100 > 2.5 ? "warn" : "good";
+      var htip = c.hedgePer100 > 2.5
+        ? " — palitan ang hedges ng direktang statement. Own it: hindi “baka”, kundi “it is”. 🦁"
+        : "";
+      fb.push({ cls: hcls, html: "<b>Hedging:</b> " + hparts + htip });
+    } else {
+      fb.push({ cls: "good", html: "<b>Hedging:</b> zero — diretso ang mga sagot 🦁" });
+    }
+
+    var fbEl = $("feedback");
+    fbEl.innerHTML = "";
+    fb.forEach(function (f) {
+      var e = document.createElement("div");
+      e.className = "fb-item " + f.cls;
+      e.innerHTML = f.html;
+      fbEl.appendChild(e);
+    });
+
+    var stats = $("stats");
+    stats.innerHTML = "";
+    [["⏱ " + fmtTime(res.seconds), "duration"], [res.wordCount, "words"], [res.sentenceCount, "sentences"], [(res.wpm || 0) + " wpm", "pace"], [res.hardCount + " / " + res.softCount, "hard / soft"], [(res.ttr || 0) + "%", "variety"], [c.hedgeCount + " / " + c.stanceCount, "hedge / strong"]].forEach(function (pair) {
+      var s = document.createElement("div");
+      s.className = "stat";
+      s.innerHTML = "<div class='v'>" + pair[0] + "</div><div class='k'>" + pair[1] + "</div>";
+      stats.appendChild(s);
+    });
+
+    $("finalTranscript").innerHTML = highlightMarkers(text, res.results);
+    $("legendRow").classList.remove("hidden");
+    $("viewResultBtn").textContent = "📝 View result ↓";
+    $("viewResultBtn").classList.remove("hidden");
+
+    saveHistory(text, res.total, d ? d.total : null, c.total);
+  }
+
+  function loadHistory() {
+    try { return JSON.parse(localStorage.getItem("oreoHistory") || "[]"); } catch (e) { return []; }
+  }
+
+  function saveHistory(text, score, delivery, conf) {
+    var entry = {
+      date: new Date().toLocaleString(),
+      topic: state.topic,
+      score: score,
+      d: (delivery === undefined || delivery === null) ? null : delivery,
+      c: (conf === undefined || conf === null) ? null : conf,
+      preview: text.slice(0, 90) + (text.length > 90 ? "…" : "")
+    };
+    var h = loadHistory();
+    h.unshift(entry);
+    h = h.slice(0, 20);
+    localStorage.setItem("oreoHistory", JSON.stringify(h));
+    try { if (window.oreoCloud) { window.oreoCloud.push(entry); } } catch (e) { }
+    renderHistory();
+  }
+
+  function renderHistory() {
+    var h = loadHistory();
+    var list = $("historyList");
+    if (!h.length) {
+      list.innerHTML = "<div class='fb-item'>Wala pa. Mag-record ka ng una mo! 🍪</div>";
+      return;
+    }
+    list.innerHTML = "";
+    h.forEach(function (item) {
+      var d = document.createElement("div");
+      d.className = "history-item";
+      d.innerHTML = "<div class='meta'><b>" + item.score + "</b>" +
+        (item.d !== undefined && item.d !== null ? " <span style='color:var(--blue)'>🎤 " + item.d + "</span>" : "") +
+        (item.c !== undefined && item.c !== null ? " <span style='color:var(--green)'>🦁 " + item.c + "</span>" : "") +
+        " · " + item.topic + " · " + item.date + "</div>";
+      list.appendChild(d);
+    });
+
+    var scores = h.slice(0, 20).map(function (x) { return x.score; }).reverse();
+    var trendWrap = $("trendWrap");
+    if (scores.length >= 2) {
+      trendWrap.classList.remove("hidden");
+      var w = 300, hh = 52, n = scores.length;
+      var best = Math.max.apply(null, scores);
+      var avg = Math.round(scores.reduce(function (a, b) { return a + b; }, 0) / n);
+      var last = scores[n - 1];
+      function xc(i) { return n === 1 ? w / 2 : 6 + (i / (n - 1)) * (w - 12); }
+      function yc(s) { return hh - 8 - (s / 100) * (hh - 18); }
+      var pts = scores.map(function (s, i) { return xc(i).toFixed(1) + "," + yc(s).toFixed(1); }).join(" ");
+      var start = scores[0];
+      var delta = last - start;
+      $("trendBox").innerHTML =
+        "<svg width='" + w + "' height='" + hh + "' viewBox='0 0 " + w + " " + hh + "' style='max-width:100%'>" +
+        "<polyline points='" + pts + "' fill='none' stroke='var(--green)' stroke-width='2.5' stroke-linejoin='round' stroke-linecap='round'/>" +
+        "<circle cx='" + xc(0).toFixed(1) + "' cy='" + yc(start).toFixed(1) + "' r='3' fill='var(--muted)'/>" +
+        "<circle cx='" + xc(n - 1).toFixed(1) + "' cy='" + yc(last).toFixed(1) + "' r='3.5' fill='var(--blue)'/>" +
+        "</svg>" +
+        "<div style='font-size:12.5px;color:var(--muted);'>Latest <b style='color:var(--cream)'>" + last + "</b> · Avg <b style='color:var(--cream)'>" + avg + "</b> · Best <b style='color:var(--cream)'>" + best + "</b> · " +
+        (delta > 0 ? "<span style='color:var(--green)'>▲ +" + delta + "</span>" : delta < 0 ? "<span style='color:var(--red)'>▼ " + delta + "</span>" : "—") + "</div>";
+    } else {
+      trendWrap.classList.add("hidden");
+    }
+  }
+
+  function flipMode() {
+    if (state.recording) { stopMic(); }
+    clearPrep();
+    if (state.mode === "mic") {
+      state.mode = "type";
+      $("micStage").classList.add("hidden");
+      $("optsRow").classList.add("hidden");
+      $("typeBox").classList.remove("hidden");
+      $("btnModeToggle").textContent = "🎤 Mic mode";
+      $("transcriptBox").classList.add("hidden");
+    } else {
+      state.mode = "mic";
+      $("micStage").classList.remove("hidden");
+      $("optsRow").classList.remove("hidden");
+      $("typeBox").classList.add("hidden");
+      $("btnModeToggle").textContent = "⌨️ Type mode";
+      $("transcriptBox").classList.remove("hidden");
+    }
+  }
+
+  function resetAll() {
+    if (state.recording) { stopMic(); }
+    state.finalText = "";
+    state.interimText = "";
+    state.seconds = 0;
+    state.audioStats = null;
+    $("typeBox").value = "";
+    $("resultCard").classList.add("hidden");
+    $("legendRow").classList.add("hidden");
+    $("viewResultBtn").classList.add("hidden");
+    $("status").textContent = "Tap the mic to start";
+    $("timer").textContent = "0:00";
+    renderLive();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function getTextForAnalysis() {
+    if (state.mode === "type") { return $("typeBox").value.trim(); }
+    return state.finalText.trim();
+  }
+
+  function rateNow() {
+    var text = getTextForAnalysis();
+    if (!text) {
+      setBanner("Walang nakuha na text. Try again — talk clearly, or switch to Type mode ⌨️.");
+      return;
+    }
+    setBanner(null);
+    var seconds = state.mode === "type" ? 60 : state.seconds;
+    var audio = state.mode === "mic" ? state.audioStats : null;
+    state.audioStats = null;
+    var res = analyze(text, seconds, audio);
+    if (state.recording) { stopMic(); }
+    showResult(text, res);
+  }
+
+  $("btnRandom").addEventListener("click", function () { setTopic(pickTopic(), false); });
+  $("btnSpeakTopic").addEventListener("click", function () { speakQueued(); });
+  $("btnSetTopic").addEventListener("click", function () {
+    var v = $("customTopic").value.trim();
+    if (v) { setTopic(v, false); $("customTopic").value = ""; }
+    else { setTopic(pickTopic(), false); }
+  });
+  $("customTopic").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") { $("btnSetTopic").click(); }
+  });
+  $("btnMic").addEventListener("click", function () {
+    if (state.recording) { stopMic(true); }
+    else if (prepId) { clearPrep(); $("btnStop").classList.add("hidden"); $("btnStop").textContent = "⏹ Stop & Rate"; $("status").textContent = "Prep cancelled"; }
+    else { startPrep(); }
+  });
+  $("btnStop").addEventListener("click", function () {
+    if (prepId) { cancelPrepViaKey(); } else { stopMic(true); }
+  });
+  $("btnModeToggle").addEventListener("click", flipMode);
+  $("btnAnalyze").addEventListener("click", rateNow);
+  $("btnReset").addEventListener("click", resetAll);
+  $("btnClearHistory").addEventListener("click", function () {
+    localStorage.removeItem("oreoHistory");
+    renderHistory();
+  });
+  $("langSelect").addEventListener("change", function () {
+    localStorage.setItem("oreoLang", $("langSelect").value);
+    if (state.recording) {
+      stopMic();
+      $("status").textContent = "Language set to " + $("langSelect").value + " — ready na ulit";
+    }
+  });
+
+  function loadLang() {
+    var l = localStorage.getItem("oreoLang");
+    if (l) { $("langSelect").value = l; }
+  }
+  loadLang();
+
+  document.addEventListener("keydown", function (e) {
+    var tag = (e.target.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "textarea" || tag === "select" || tag === "button") { return; }
+    if (e.code === "Space" && !$("micStage").classList.contains("hidden")) {
+      e.preventDefault();
+      if (state.recording) { stopMic(true); }
+      else if (prepId) { cancelPrepViaKey(); }
+      else { startPrep(); }
+    }
+  });
+
+  $("btnRetry").addEventListener("click", function () {
+    resetAll();
+    $("btnAnalyze").focus();
+  });
+
+  var readState = { speaking: false };
+  var btnRead = $("btnReadBack");
+  btnRead.addEventListener("click", function () {
+    try {
+      if (readState.speaking) {
+        window.speechSynthesis.cancel();
+        return;
+      }
+      var text = getTextForAnalysis() || $("finalTranscript").textContent;
+      if (!text) { setBanner("Wala pang transcript para pakinggan."); return; }
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = "en-US";
+      u.rate = 0.95;
+      readState.speaking = true;
+      btnRead.textContent = "⏹ Stop reading";
+      var resetBtn = function () { readState.speaking = false; btnRead.textContent = "🔉 Hear my answer"; };
+      u.onend = resetBtn;
+      u.onerror = resetBtn;
+      window.speechSynthesis.speak(u);
+    } catch (e) { }
+  });
+
+  $("btnCopy").addEventListener("click", function () {
+    var text = $("finalTranscript").textContent.trim();
+    if (!text) { return; }
+    navigator.clipboard.writeText(text).then(function () {
+      $("btnCopy").textContent = "✅ Copied!";
+      setTimeout(function () { $("btnCopy").textContent = "📋 Copy transcript"; }, 1500);
+    }, function () {
+      setBanner("Clipboard blocked by browser — select the transcript manually.");
+    });
+  });
+
+  var resultObserver = new IntersectionObserver(function (entries) {
+    var entry = entries[0];
+    var hasResult = !$("resultCard").classList.contains("hidden");
+    if (!hasResult || entry.isIntersecting) { $("viewResultBtn").classList.add("hidden"); }
+    else {
+      var below = $("resultCard").getBoundingClientRect().top > window.innerHeight;
+      var vb = $("viewResultBtn");
+      vb.textContent = below ? "📝 View result ↓" : "📝 View result ↑";
+      vb.classList.remove("hidden");
+    }
+  }, { threshold: 0.15 });
+  resultObserver.observe($("resultCard"));
+
+  $("viewResultBtn").addEventListener("click", function () {
+    $("resultCard").scrollIntoView({ behavior: "smooth", block: "start" });
+    this.classList.add("hidden");
+  });
+
+  document.addEventListener("click", function () {
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (AC && !window.__oreoAC) { window.__oreoAC = new AC(); }
+    } catch (e) { }
+  }, { once: true });
+
+  try { window.__oreoNotify = setBanner; } catch (e) { }
+  document.addEventListener("oreoCloud:merged", function () { renderHistory(); });
+
+  setTopic(TOPICS[Math.floor(Math.random() * TOPICS.length)], false);
+  renderHistory();
+
+  if (state.mode === "mic" && (window.SpeechRecognition || window.webkitSpeechRecognition)) {
+    setBanner("🍪 Tip: pag-click ng mic, hihingi ng 2 permissions (speech recognition + volume analysis para sa pause tracker talaga). Kung madalas mamatay ang mic, uncheck ang \"Pause tracker\" — isang mic session na lang, more stable.");
+  }
+
+  if (!(window.SpeechRecognition || window.webkitSpeechRecognition)) {
+    setBanner("This browser has no Speech Recognition. Gamit ka ng Google Chrome o Microsoft Edge, o i-type ang sagot mo sa Type mode ⌨️.");
+    flipMode();
+  }
+})();
+</script>
+</body>
+</html>
