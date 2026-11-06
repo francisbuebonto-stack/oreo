@@ -429,6 +429,9 @@
     catch (e) { for (var j = 0; j < 16; j++) { out += hex[Math.floor(Math.random() * 16)]; } }
     return out;
   }
+  function withTimeout(p, ms) {
+    return Promise.race([p, new Promise(function (_, rej) { setTimeout(function () { rej(new Error("timeout after " + Math.round(ms / 1000) + "s")); }, ms); })]);
+  }
 
   function chipPaint() {
     var k = lsGet(KEY_STORE);
@@ -457,7 +460,7 @@
     var k = lsGet(KEY_STORE);
     if (!k) { if (cb) cb(null); return; }
     pending = true; chipPaint();
-    sessionRef(k).get().then(function (snap) {
+    withTimeout(sessionRef(k).get(), 12000).then(function (snap) {
       var map = snap.val();
       pending = false; chipPaint();
       if (map && Object.keys(map).length) {
@@ -496,7 +499,7 @@
       return;
     }
     if (k.length !== 6) { notify("☁ Pair code must be 6 hex chars (e.g. A1B2C3)."); return; }
-    pairRef(k).get().then(function (snap) {
+    withTimeout(pairRef(k).get(), 12000).then(function (snap) {
       var full = snap.val();
       if (!full || !/^[a-f0-9]{16}$/.test(full)) { notify("☁ Pair code hindi found — generate muna sa laptop (tap ☁, leave blank)."); return; }
       lsSet(KEY_STORE, full);
